@@ -4,9 +4,11 @@
 class Inventory(object):
     def __init__(self):
         self.max_size = 0
-        self.sizes = {} #key is string value is float
-        self.stuff = {} #key is string value is float
-        self.ideal = {} #key is string value is float 
+        self.sizes = {} #key: commodity_id val: how much space each thing takes up
+        self.stuff = {} #key: commodity, val: ammount
+        self.ideal = {} #key: commodity, val: ideal ammounts for each thing 
+        self.index = {} #not sure what this is used for, if anything.
+        #original line was: private static var _index:Map<String, Commodity>;
     
     def from_data(self, data):
         """data is an InventoryData object"""
@@ -122,48 +124,23 @@ class Inventory(object):
 	    if result < 0:
 	        result = 0
         self.stuff[good] = result
+
+	# returns the number of units above the desired inventory level or 0 if @ or below
+	def surplus(self, good):
+	    amt = self.query(good)
+	    ideal = self.ideal[good]
+	    if amt > ideal:
+	        return amt - ideal
+	    else:
+	        return 0
 	
-	/**
-	 * Returns # of units above the desired inventory level, or 0 if @ or below
-	 * @param	commodity_ string id of commodity
-	 * @return
-	 */
-	
-	public function surplus(good:String):Float
-	{
-		var amt:Float = query(good);
-		var ideal:Float = _ideal.get(good);
-		if (amt > ideal)
-		{
-			return (amt - ideal);
-		}
-		return 0;
-	}
-	
-	/**
-	 * Returns # of units below the desired inventory level, or 0 if @ or above
-	 * @param	commodity_
-	 * @return
-	 */
-	
-	public function shortage(good:String):Float
-	{
-		if (!_stuff.exists(good))
-		{
-			return 0;
-		}
-		var amt:Float = query(good);
-		var ideal:Float = _ideal.get(good);
-		if (amt < ideal)
-		{
-			return (ideal - amt);
-		}
-		return 0;
-	}
-	
-	//private static var _index:Map<String, Commodity>;
-	
-	private var _stuff:Map<String, Float>;		// key:commodity_id, val:amount
-	private var _ideal:Map<String, Float>;		// ideal counts for each thing
-	private var _sizes:Map<String, Float>;		// how much space each thing takes up
-}
+	# returns the number of units below the desired invetory level or 0 if @ or above
+    def shortage(self, good):
+        if not self.stuff.get(good, False):
+            return 0
+        amt = self.query(good)
+        ideal = self.ideal[good]
+        if amt < ideal
+            return ideal - amt
+        
+        return 0
