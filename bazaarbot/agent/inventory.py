@@ -1,77 +1,60 @@
 #! /usr/bin/env python
 
 
-class Inventory
-{
-	public var maxSize:Float = 0;
-	
-	public function new() 
-	{
-		_sizes = new Map<String, Float>();
-		_stuff = new Map<String, Float>();
-		_ideal = new Map<String, Float>();
-		maxSize = 0;
-	}
-	
-	public function fromData(data:InventoryData)
-	{
-		var sizes = [];
-		var amounts = [];
-		for (key in data.start.keys())
-		{
-			sizes.push(key);
-			amounts.push(data.start.get(key));
-		}
-		setStuff(sizes, amounts);
-		sizes = [];
-		amounts = [];
-		for (key in data.size.keys())
-		{
-			sizes.push(key);
-			amounts.push(data.size.get(key));
-		}
-		setSizes(sizes, amounts);
-		sizes = [];
-		amounts = [];
-		for (key in data.ideal.keys())
-		{
-			sizes.push(key);
-			amounts.push(data.ideal.get(key));
-			setIdeal(sizes, amounts);
-		}
-		maxSize = data.maxSize;
-	}
-	
-	public function copy():Inventory
-	{
-		var i:Inventory = new Inventory();
-		var stufff:Array<Float> = [];
-		var stuffi:Array<String> = [];
-		var idealf:Array<Float> = [];
-		var ideali:Array<String> = [];
-		var sizesf:Array<Float> = [];
-		var sizesi:Array<String> = [];
-		for (key in _stuff.keys())
-		{
-			stufff.push(_stuff.get(key));
-			stuffi.push(key);
-		}
-		for (key in _ideal.keys())
-		{
-			idealf.push(_ideal.get(key));
-			ideali.push(key);
-		}
-		for (key in _sizes.keys())
-		{
-			sizesf.push(_sizes.get(key));
-			sizesi.push(key);
-		}
-		i.setStuff(stuffi, stufff);
-		i.setIdeal(ideali, idealf);
-		i.setSizes(sizesi, sizesf);
-		i.maxSize = maxSize;
-		return i;
-	}
+class Inventory(object):
+    def __init__(self):
+        self.max_size = 0
+        self.sizes = {} #key is string value is float
+        self.stuff = {} #key is string value is float
+        self.ideal = {} #key is string value is float 
+    
+    def from_data(self, data):
+        """data is an InventoryData object"""
+        sizes = []
+        amounts = []
+        for key data.start.keys():
+            sizes.append(key)
+            amounts.append(data.start[key])
+	    self.set_stuff(sizes, amounts)
+	    
+	    sizes = []
+	    amounts = []
+	    for key in data.size.keys():
+	        sizes.append(key)
+	        amounts.append(data.size[key])
+	    self.set_sizes(sizes, amounts)
+	    
+	    sizes = []
+	    amounts = []
+	    for key in data.ideal.keys():
+	        sizes.append(key)
+	        amounts.append(data.ideal[key])
+	        self.set_ideal(sizes, amounts)
+        max_size = data.max_size
+    
+    def copy(self):
+        i = Inventory()
+        stufff = []
+        stuffi = []
+        idealf = []
+        ideali = []
+        sizesf = []
+        sizesi = []
+        for key in self.stuff.keys():
+            stufff.append(self.stuff[key])
+            stuffi.append(key)
+        for key in self.ideal.keys():
+            idealf.append(self.ideal[key])
+            ideali.append(key)
+        for key in self.size.keys():
+            sizesf.append(self.size[key])
+            sizesi.append(key)
+        i.set_stuff(stuffi, stufff)
+        i.set_ideal(ideali, idealf)
+        i.set_sizes(sizesi, sizesf)
+        i.max_size = self.max_size
+        
+        return i
 	
 	public function destroy():Void
 	{
