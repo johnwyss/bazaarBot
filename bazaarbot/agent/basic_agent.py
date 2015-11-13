@@ -49,6 +49,14 @@ class BasicAgent(object):
 	public var profit(get, null):Float;
 	public var inventorySpace(get, null):Float;
 	public var inventoryFull(get, null):Bool;
+	
+		private var _logic:Logic;
+	private var _inventory:Inventory;
+	private var _priceBeliefs:Map<String, Point>;
+	private var _observedTradingRange:Map<String, Array<Float>>;
+	private var _profit:Float = 0;	//profit from last round
+	private var _lookback:Int = 15;
+	
         
         
     def destroy(self):
@@ -79,74 +87,52 @@ class BasicAgent(object):
         """takes a Market object"""
         self.logic.perform(self, market)
 
-    def generate_offers(self, bazaar, good)
+    def generate_offers(self, bazaar, good):
+        """bazaar is Market object, good is String describing good"""
+        pass # implement in subclass
+    
+    def update_price_model(self, bazaar, act, good, success, unit_price=0.0):
+        """bazaar: Market object, act: String, good: String, succes: Bool, unit_price: Float"""
+        pass # implement in sublclass
+    
+    def create_bid(self, bazaar, good, limit):
+        """bazaar: Market, good:String, limit:Float"""
+        pass # implement in sublcass
+    
+    def create_ask(self, bazaar, commodity, limit):
+        """bazaar: Market, commodity:String, limit:Float"""
+        pass # implement in sublcass
+
+    def query_inventory(self, good):
+        return self.inventory.query(good)
+        
+    def change_inventory(self, good, delta):
+        self.inventory.change(good, delta)
 	
-	public function generateOffers(bazaar:Market, good:String):Void
-	{
-		//no implemenation -- provide your own in a subclass
-	}
+    @property
+    def get_inventory_space(self):
+        return self.inventory.get_empty_space()
+        
+    @property
+    def get_inventory_full(self):
+        return self.inventory.get_empty_space() == 0
 	
-	public function updatePriceModel(bazaar:Market, act:String, good:String, success:Bool, unitPrice:Float = 0):Void
-	{
-		//no implementation -- provide your own in a subclass
-	}
+    @property
+    def get_profit(self):
+        return self.money - self.money_last_round
 	
-	public function createBid(bazaar:Market, good:String, limit:Float):Offer
-	{
-		//no implementation -- provide your own in a subclass
-		return null;
-	}
+    def determin_price_of(self, commodity):
+        belief = self.price_beliefs[commodity]
+        return random.randint(belief.x, belief.y) 
+        #original line: Quick.randomRange(belief.x, belief.y);
 	
-	public function createAsk(bazaar:Market, commodity_:String, limit_:Float):Offer
-	{
-		//no implementation -- provide your own in a subclass
-		return null;
-	}
-	
-	public function queryInventory(good:String):Float
-	{
-		return _inventory.query(good);
-	}
-	
-	public function changeInventory(good:String, delta:Float):Void
-	{
-		_inventory.change(good, delta);
-	}
-	
-	/********PRIVATE************/
-	
-	private var _logic:Logic;
-	private var _inventory:Inventory;
-	private var _priceBeliefs:Map<String, Point>;
-	private var _observedTradingRange:Map<String, Array<Float>>;
-	private var _profit:Float = 0;	//profit from last round
-	private var _lookback:Int = 15;
-	
-	private function get_inventorySpace():Float
-	{
-		return _inventory.getEmptySpace();
-	}
-	
-	public function get_inventoryFull():Bool
-	{
-		return _inventory.getEmptySpace() == 0;
-	}
-	
-	private function get_profit():Float
-	{
-		return money - moneyLastRound;
-	}
-	
-	private function determinePriceOf(commodity_:String):Float
-	{
-		var belief:Point = _priceBeliefs.get(commodity_);
-		return Quick.randomRange(belief.x, belief.y);
-	}
-	
-	private function determineSaleQuantity(bazaar:Market, commodity_:String):Float
-	{
-		var mean:Float = bazaar.getAverageHistoricalPrice(commodity_,_lookback);
-		var trading_range:Point = observeTradingRange(commodity_);
+   def determine_sale_quantity(self, bazaar, commodity):
+        mean = bazaar.get_average_historical_price(commodity, self.lookback)
+        trading_range = self.observe_trading_range(commodity) # returns a Point object
+       	
+       	if trading_range:
+       	    favorability = random.randint(
+
 		if (trading_range != null)
 		{
 			var favorability:Float = Quick.positionInRange(mean, trading_range.x, trading_range.y);
@@ -192,7 +178,6 @@ class BasicAgent(object):
 		var a:Array<Float> = _observedTradingRange.get(good);
 		var pt:Point = new Point(Quick.minArr(a), Quick.maxArr(a));
 		return pt;
-	}
-}
+
 
 
