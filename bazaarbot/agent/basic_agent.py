@@ -130,54 +130,37 @@ class BasicAgent(object):
         mean = bazaar.get_average_historical_price(commodity, self.lookback)
         trading_range = self.observe_trading_range(commodity) # returns a Point object
        	
-       	if trading_range:
-       	    favorability = random.randint(
-
-		if (trading_range != null)
-		{
-			var favorability:Float = Quick.positionInRange(mean, trading_range.x, trading_range.y);
-			//position_in_range: high means price is at a high point
-			
-			var amount_to_sell:Float = Math.round(favorability * _inventory.surplus(commodity_));
-			if (amount_to_sell < 1)
-			{
-				amount_to_sell = 1;
-			}
-			return amount_to_sell;
-		}
-		return 0;
-	}
+        if trading_range:
+       	    # TODO:  Not sure exactly what this does... this needs to be changed
+       	    favorability = Quick.position_in_range(mean, trading_range.x, trading_range.y) 
+       	    # position_in_range: high means price is at a high point
+       	    
+            amount_to_sell = round(favorability * self.inventory.surplus(commodity))
+            if ammount_to_sell < 1:
+                ammount_to_sell = 1
+            return amount_to_sell
+    
+    def determine_purchase_quantity(self, bazaar, commodity):
+        mean = bazaar.get_average_historical_price(commodity, self.lookback)
+        trading_range = self.observe_trading_range(commodity)
+        
+        if trading_range:	
+            # TODO:  Not sure exactly what this does... this needs to be changed
+       	    favorability = Quick.position_in_range(mean, trading_range.x, trading_range.y) 
+       	    favorability = 1 - favorability #1 - favorability to see how close we are to the low end
+            
+            amount_to_buy = round(favorability * self.inventory.shortage(commodity))
+            if amount_to_buy < 1:
+                amount_to_buy = 1
+            return amount_to_buy
 	
-	private function determinePurchaseQuantity(bazaar:Market, commodity_:String):Float
-	{
-		var mean:Float = bazaar.getAverageHistoricalPrice(commodity_,_lookback);
-		var trading_range:Point = observeTradingRange(commodity_);
-		if (trading_range != null)
-		{
-			var favorability:Float = Quick.positionInRange(mean, trading_range.x, trading_range.y);
-			favorability = 1 - favorability;			
-			//do 1 - favorability to see how close we are to the low end
-			
-			var amount_to_buy:Float = Math.round(favorability * _inventory.shortage(commodity_));
-			if (amount_to_buy < 1)
-			{
-				amount_to_buy = 1;
-			}
-			return amount_to_buy;
-		}
-		return 0;
-	}
+	@property
+	def get_price_belief(self, good):
+	    return self.price_beliefs[good]
 		
-	private function getPriceBelief(good:String):Point
-	{
-		return _priceBeliefs.get(good);
-	}
-	
-	private function observeTradingRange(good:String):Point
-	{
-		var a:Array<Float> = _observedTradingRange.get(good);
-		var pt:Point = new Point(Quick.minArr(a), Quick.maxArr(a));
-		return pt;
-
+    def observe_trading_range(self, good):
+        a = self.observed_trading_range[good]
+        # TODO: this needs fixed not sure what it does
+        return Point(Quick.minArr(a), Quick.maxArr(a))
 
 
