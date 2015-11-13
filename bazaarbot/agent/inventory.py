@@ -56,136 +56,72 @@ class Inventory(object):
         
         return i
 	
-	public function destroy():Void
-	{
-		for (key in _stuff.keys())
-		{
-			_stuff.remove(key);
-		}
-		for (key in _ideal.keys())
-		{
-			_ideal.remove(key);
-		}
-		for (key in _sizes.keys())
-		{
-			_sizes.remove(key);
-		}
-		_stuff = null;
-		_ideal = null;
-		_sizes = null;
-	}
+	def destroy(self) # not sure if this is actually needed
+	    for key in self.stuff.keys():
+	        del self.stuff[key]
+	    for key in self.ideal.keys():
+	        del self.ideal[key]
+	    for key in self.sizes.keys():
+	        del self.sizes[key]
+	    self.stuff = None
+	    self.ideal = None
+	    self.sizes = None
 	
-	/**
-	 * Set amounts of various commodities
-	 * @param	stuff_
-	 * @param	amounts_
-	 */
+
+    # set ammounts for various commodities
+    def set_stuff(self, stuff, amounts):
+        """stuff: list of strings, amounts: list of floats"""
+        # TODO: use zip here
+        for s, a in zip(stuff, amounts):
+            self.stuff[s] = a
+
+	# set how much of each commidty to stockpile
+	def set_ideal(self, ideal, amounts):
+	    """ideal: list of strings, amounts: list of floats"""
+	    for i, a in zip(ideal, amounts):
+	        self.ideal[i] = a
+	        
+   def set_sizes(self, sizes, amounts):
+       """sizes: list of strings, amounts list of floats"""
+       for s, a in zip(sizes, amounts):
+           self.sizes[s] = a
 	
-	public function setStuff(stuff:Array<String>, amounts:Array<Float>):Void
-	{
-		for (i in 0...stuff.length)
-		{
-			_stuff.set(stuff[i], amounts[i]);
-		}
-	}
+    # return amount of good
+    def query(self, good):
+        if self.stuff.get(good, False):
+            return self.stuff[good] 
+            # At first I thought not needed, but this makes sure you can get goods that might not exist
+   
+    def ideal(self, good):
+        if self.ideal.get(good, False):
+            return self.ideal[good]
+            
+    def get_empty_space(self):
+        return self.max_size - self.get_used_space()
 	
-	/**
-	 * Set how much of each commodity to stockpile
-	 * @param	stuff_
-	 * @param	amounts_
-	 */
+    def get_used_space(self):
+        space_used = 0
+        for key in self.stuff.keys():
+            space_used += self.stuff[key] * self.sizes[key]
+		return space_used
 	
-	public function setIdeal(ideal:Array<String>, amounts:Array<Float>):Void
-	{
-		for (i in 0...ideal.length)
-		{
-			_ideal.set(ideal[i], amounts[i]);
-		}
-	}
-	
-	public function setSizes(sizes:Array<String>, amounts:Array<Float>):Void
-	{
-		for (i in 0...sizes.length)
-		{
-			_sizes.set(sizes[i], amounts[i]);
-		}
-	}
-	
-	/**
-	 * Returns how much of this
-	 * @param	commodity_ string id of commodity
-	 * @return
-	 */
-	
-	public function query(good:String):Float
-	{
-		if (_stuff.exists(good))
-		{
-			return _stuff.get(good);
-		}
-		return 0;
-	}
-	
-	public function ideal(good:String):Float
-	{
-		if (_ideal.exists(good))
-		{
-			return _ideal.get(good);
-		}
-		return 0;
-	}
-	
-	public function getEmptySpace():Float
-	{
-		return maxSize - getUsedSpace();
-	}
-	
-	public function getUsedSpace():Float
-	{
-		var space_used:Float = 0;
-		for (key in _stuff.keys())
-		{
-			space_used += _stuff.get(key) * _sizes.get(key);
-		}
-		return space_used;
-	}
-	
-	public function getCapacityFor(good:String):Float
-	{
-		if (_sizes.exists(good))
-		{
-			return _sizes.get(good);
-		}
-		return -1;
-	}
-	
-	/**
-	 * Change the amount of the given commodity by delta
-	 * @param	commodity_ string id of commodity
-	 * @param	delta_ amount added
-	 */
-	
-	public function change(good:String, delta:Float):Void
-	{
-		var result:Float;
-		
-		if (_stuff.exists(good))
-		{
-			var amount:Float = _stuff.get(good);
-			result = amount + delta;
-		}
-		else
-		{
-			result = delta;
-		}
-		
-		if (result < 0)
-		{
-			result = 0;
-		}
-		
-		_stuff.set(good, result);
-	}
+	def get_capacity_for(self, good):
+	    if self.sizes.get(good, False):
+	        return self.sizes[good]
+	    else:
+	        return -1
+    
+    #change the amount of the given commodity by delta	 
+	def change(self, good, delta):
+	    result = 0.0
+	    if self.stuff.get(good, False):
+	        amount = self.stuff[good]
+	        result = amount + delta
+	    else:
+	        result = delta
+	    if result < 0:
+	        result = 0
+        self.stuff[good] = result
 	
 	/**
 	 * Returns # of units above the desired inventory level, or 0 if @ or below
