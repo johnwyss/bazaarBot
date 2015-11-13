@@ -1,20 +1,38 @@
-package bazaarbot.agent;
-import bazaarbot.agent.Inventory;
-import bazaarbot.utils.EconNoun;
-import bazaarbot.utils.Quick;
-import openfl.Assets;
-import openfl.geom.Point;
-import bazaarbot.agent.InventoryData;
-import bazaarbot.agent.Logic;
+#! /usr/bin/env python
 
-/**
- * The most fundamental agent class, and has as little implementation as possible.
- * In most cases you should start by extending Agent instead of this.
- * @author larsiusprime
- */
 
-@:allow(Market)
-class BasicAgent
+from inventory import *
+from econ_nount import *
+from quick import *
+from inventory_data import *
+from logic import *
+
+
+class AgentData(object):
+	""" This is the structure for holding data for new agents"""
+	def __init__(self, class_name, money, inventory, logic_name, logic, lookback=None):
+		"""
+		class_name: string
+		money: float
+		inventory: InventoryData object
+		logic_name: String
+		logic: Logic object
+		lookback: int
+		"""
+		self.class_name = class_name
+		self.money = money
+		self.inventory = inventory
+		self.logic_name = logic_name
+		self.logic = logic
+		self.lookback = lookback
+
+
+class BasicAgent(object):
+    def __init__(self, id, data):
+	    """ id: int, data: AgentData object"""
+	    
+	    
+	
 {
 	public var id:Int;				//unique integer identifier
 	public var className:String;	//string identifier, "famer", "woodcutter", etc.
@@ -417,11 +435,4 @@ class BasicAgent
 	}
 }
 
-typedef AgentData = {
-	className:String,
-	money:Float,
-	inventory:InventoryData,
-	logicName:String,
-	logic:Logic,
-	?lookBack:Int
-}
+
