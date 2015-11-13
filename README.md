@@ -1,3 +1,7 @@
+This is work in progress to convert this to python and then expand
+
+
+
 bazaarBot
 =========
 
