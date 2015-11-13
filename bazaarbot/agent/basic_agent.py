@@ -30,21 +30,21 @@ class AgentData(object):
 class BasicAgent(object):
     def __init__(self, id, data):
 	    """ id: int, data: AgentData object"""
+	    self.id = id #must be a unique integer identifier # TODO: make this be unique in class
+	    self.class_name = data.class_name #string identifier, 'farmer', 'woodcutter', etc
+        self.money = data.money
+        self.inventory = Inventory()
 	    
 	    
 	
-{
-	public var id:Int;				//unique integer identifier
-	public var className:String;	//string identifier, "famer", "woodcutter", etc.
+
 	public var money:Float;
 	public var moneyLastRound(default, null):Float;
 	public var profit(get, null):Float;
 	public var inventorySpace(get, null):Float;
 	public var inventoryFull(get, null):Bool;
 	public var destroyed(default, null):Bool;
-	
-	public function new(id:Int, data:AgentData) 
-	{
+
 		this.id = id;
 		className = data.className;
 		money = data.money;
