@@ -1,45 +1,28 @@
 #! /usr/bin/env python
 
-class InventoryData
-{
-	public var maxSize:Float;
-	public var ideal:Map<String, Float>;
-	public var start:Map<String, Float>;
-	public var size:Map<String, Float>;
+class InventoryData(object):
+    def __init__(self, max_size, ideal, start, size):
+        """max_size: float, ideal: dict of ideal commodities with number, start: dict, size: dict"""
+        self.max_size = max_size
+        self.ideal = ideal
+        self.start = start
+        self.size = size
+        
+    def from_json(self, data): # TODO: note this will probably not work.  needs some help
+        maz_size = data.max_size
+        ideal = {}
+        start = {}
+        size = {}
 	
-	public function new(maxSize:Float, ideal:Map<String,Float>, start:Map<String,Float>, size:Map<String,Float>)
-	{
-		this.maxSize = maxSize;
-		this.ideal = ideal;
-		this.start = start;
-		this.size = size;
-	}
-	
-	public static function fromJson(data:Dynamic):InventoryData
-	{
-		var maxSize:Int = data.max_size;
-		var ideal = new Map<String, Float>();
-		var start = new Map<String, Float>();
-		var size  = new Map<String, Float>();
-		
-		var startArray = Reflect.fields(data.start);
-		if (startArray != null)
-		{
-			for (s in startArray)
-			{
-				start.set(s, cast Reflect.field(data.start, s));
-				size.set(s, 1);	//initialize size of every item to 1 by default
-			}
-		}
-		var idealArray = Reflect.fields(data.ideal);
-		if (idealArray != null)
-		{
-			for (i in idealArray)
-			{
-				ideal.set(i, cast Reflect.field(data.ideal, i));
-			}
-		}
-		
-		return new InventoryData(maxSize, ideal, start, size);
-	}
-}
+	    start_array = data.start
+	    if start_array:
+	        for s in start_array:
+	            start[s] = data.start[s]
+	            size[s] = 1 #initialize start of every item to 1 by default
+	        
+		ideal_array = data.ideal
+		if ideal_array:
+		    for i in ideal_array:
+		        ideal[i] = data.ideal[i]
+		        
+		return InventoryData(max_size, ideal, start, size)
