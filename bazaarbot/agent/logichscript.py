@@ -5,7 +5,7 @@ from agent import *
 
 
 class LogicHScript(Logic)
-{
+
 	var script:String = "";
 	var source:String;
 	
