@@ -37,7 +37,5 @@ class LogicHScript(Logic)
 				if (to_drop != "") {_consume(a, to_drop, amt);}
 			}
 		""" # do not understand this part
-		 
-		interp.variables = vars;
-		interp.execute(ast);
+	   ast() # not sure if this is correct
 
